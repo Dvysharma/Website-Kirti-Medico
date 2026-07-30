@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggleBtn = document.getElementById('themeToggle');
     
     // Initial theme check
-    const savedTheme = localStorage.getItem('theme_preference') || 'light';
+    const savedTheme = localStorage.getItem('theme_preference') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
 
     if (themeToggleBtn) {
@@ -21,6 +21,37 @@ document.addEventListener('DOMContentLoaded', function() {
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme_preference', newTheme);
             console.log(`🌓 Theme toggled to: ${newTheme}`);
+        });
+    }
+
+    // ==========================================
+    // 2.1 Mobile Hamburger Menu Toggle
+    // ==========================================
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navMenu = document.getElementById('navMenu');
+    const navLinksList = document.querySelectorAll('.nav-links a');
+
+    if (mobileMenuBtn && navMenu) {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileMenuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when a link is clicked
+        navLinksList.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside of navbar/menu
+        document.addEventListener('click', (e) => {
+            if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
     }
 
