@@ -37,7 +37,10 @@ def api_orders():
     # Save uploaded files to temp folder
     files = request.files.getlist('attachment')
     saved_files = []
-    upload_dir = os.path.join(BASE_DIR, 'uploads')
+    if os.environ.get('VERCEL') == '1':
+        upload_dir = '/tmp/uploads'
+    else:
+        upload_dir = os.path.join(BASE_DIR, 'uploads')
     os.makedirs(upload_dir, exist_ok=True)
     for f in files:
         filename = f"{uuid4().hex}_{f.filename}"
@@ -99,9 +102,10 @@ def api_orders():
                     'body': forward_response.get('body')
                 }
                 print('WEB3FORMS FORWARD RESULT:', log_entry)
-                with open(os.path.join(BASE_DIR, 'forward.log'), 'a', encoding='utf-8') as lf:
-                    from datetime import datetime
-                    lf.write(f"[{datetime.utcnow().isoformat()}] {log_entry}\n")
+                if os.environ.get('VERCEL') != '1':
+                    with open(os.path.join(BASE_DIR, 'forward.log'), 'a', encoding='utf-8') as lf:
+                        from datetime import datetime
+                        lf.write(f"[{datetime.utcnow().isoformat()}] {log_entry}\n")
             except Exception as e:
                 print('Failed to write forward log:', e)
 
@@ -111,9 +115,10 @@ def api_orders():
             try:
                 err_log = {'url': WEB3FORMS_URL, 'error': str(e)}
                 print('WEB3FORMS FORWARD ERROR:', err_log)
-                with open(os.path.join(BASE_DIR, 'forward.log'), 'a', encoding='utf-8') as lf:
-                    from datetime import datetime
-                    lf.write(f"[{datetime.utcnow().isoformat()}] ERROR {err_log}\n")
+                if os.environ.get('VERCEL') != '1':
+                    with open(os.path.join(BASE_DIR, 'forward.log'), 'a', encoding='utf-8') as lf:
+                        from datetime import datetime
+                        lf.write(f"[{datetime.utcnow().isoformat()}] ERROR {err_log}\n")
             except Exception:
                 pass
 
